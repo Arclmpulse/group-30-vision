@@ -6,6 +6,13 @@ Camera being used is an Intel RealSense Depth Camera D415. Will keep using this 
 
 YOLOv4 and opencv-python will be used as a proof of concept. Might upgrade to YOLOv8 if this won't cut it, we'll see. Less documentation on that but it is more efficient so...
 
+## Naming convention
+When a major function is introduced to the code or massively revamped ie. Thresholding algorithms, Filters, adding new libraries etc. Change the first digit of the version! (1.0 -> 2.0)
+
+When only existing code/functions have been changed ie. Adding QoL changes like a framerate counter or adjusting values, bug fixing, etc. Change the second digit of the version!
+
+Please add all edits to changelog, I'd like to know which version of code is stable and we can squash bugs faster that way.
+
 ## Installation (for dummies!)
 This will be assuming pip is installed.
 
