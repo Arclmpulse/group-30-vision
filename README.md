@@ -28,6 +28,7 @@ Open IDE of choice and run the python script.
 
 ## Known Bugs
 ~~CPU/Memory allocation is a little uncontrolled, may crash other programs. Will look into this.~~ Fixed!
+
 Threshold is too loose on circular objects, will refine further.
 
 ## Changelog
