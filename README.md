@@ -34,6 +34,7 @@ Threshold is too loose on circular objects, will refine further.
 ## Changelog
 ### Version 2.0
 Fixed bugs related to crashing.
+
 Successfully detects circular objects in real-time.
 
 ### Version 1.0
