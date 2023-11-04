@@ -1,4 +1,4 @@
-# Version 1.0
+# Version 2.0
 
 Initial code to set up camera and for basic object detection.
 
@@ -17,7 +17,7 @@ Please add all edits to changelog, I'd like to know which version of code is sta
 This will be assuming pip is installed.
 
 ### Libraries
-Install numpy, opencv-python, tensorflow, and yolov4.
+Install numpy, opencv-python, tensorflow, and ultralytics.
 
 ### Other Files
 You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
@@ -27,9 +27,15 @@ Please install this to the directory of the other files!
 Open IDE of choice and run the python script.
 
 ## Known Bugs
-CPU/Memory allocation is a little uncontrolled, may crash other programs. Will look into this.
-
+~~CPU/Memory allocation is a little uncontrolled, may crash other programs. Will look into this.~~ Fixed!
+Threshold is too loose on circular objects, will refine further.
 
 ## Changelog
+### Version 2.0
+Fixed bugs related to crashing.
+Successfully detects circular objects in real-time.
+
 ### Version 1.0
 Script sucessfully pulls camera.
+
+
