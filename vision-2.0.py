@@ -7,6 +7,10 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 # Initialize the USB camera (in this case, camera index 2)
 cap = cv2.VideoCapture(0)
 
+# Known parameters (from camera calibration)
+focal_length = 1000  # Example focal length in pixels
+real_object_height = 0.1  # Example real object height in meters (10 centimeters)
+
 while True:
     ret, frame = cap.read()  # Read a frame from the camera
 
@@ -24,12 +28,12 @@ while True:
     blurred_frame = cv2.GaussianBlur(gray_frame, (5, 5), 0)
 
     # Use Hough Circle Transform for circle detection
-    circles = cv2.HoughCircles(blurred_frame, cv2.HOUGH_GRADIENT, dp=1, minDist=20, param1=50, param2=30, minRadius=5, maxRadius=100)
+    circles = cv2.HoughCircles(blurred_frame, cv2.HOUGH_GRADIENT, dp=1, minDist=20, param1=100, param2=50, minRadius=25, maxRadius=75)
 
     if circles is not None:
         circles = np.uint16(np.around(circles))
         for circle in circles[0, :]:
-            center = (circle[0], circle[1])
+            center_x, center_y = circle[0], circle[1]
             radius = circle[2]
 
             # Calculate circularity manually
@@ -39,8 +43,20 @@ while True:
 
             # Filter by circularity and size
             if 0.99 < circularity < 1.01 and radius > 25:
-                cv2.circle(frame, center, radius, (0, 255, 0), 2)
-                cv2.putText(frame, "Circle", (center[0], center[1] - radius - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.circle(frame, (center_x, center_y), radius, (0, 255, 0), 2)
+                cv2.putText(frame, "Circle", (center_x, center_y - radius - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+                # Measure the distance to the circle in meters
+                object_height_in_pixels = 2 * radius  # Example: Use the object's diameter as its height
+                distance = (real_object_height * focal_length) / object_height_in_pixels
+                
+                # Calculate distances from the top-left corner (X and Y) in meters
+                distance_x = (center_x * real_object_height) / object_height_in_pixels
+                distance_y = (center_y * real_object_height) / object_height_in_pixels
+                
+                cv2.putText(frame, f"Distance X: {distance_x:.2f} meters", (center_x - radius, center_y + radius + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, f"Distance Y: {distance_y:.2f} meters", (center_x - radius, center_y + radius + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, f"Distance Z: {distance:.2f} meters", (center_x - radius, center_y + radius + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)                
 
     # Display the processed frame
     cv2.imshow("Object Tracking", frame)
