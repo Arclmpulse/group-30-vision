@@ -1,4 +1,4 @@
-# Version 2.0
+# Version 3.0
 
 Initial code to set up camera and for basic object detection.
 
@@ -29,9 +29,20 @@ Open IDE of choice and run the python script.
 ## Known Bugs
 ~~CPU/Memory allocation is a little uncontrolled, may crash other programs. Will look into this.~~ Fixed!
 
-Threshold is too loose on circular objects, will refine further.
+~~Threshold is too loose on circular objects, will refine further.~~ Tightened threshold on circular objects, mostly fixed. Need to fine tune.
+
+_Not detecting correct camera if multiple plugged in_ Not a bug. May look into updating code and retrieving the correct camera every single time.
+
+Motion is not perfect. Does not track high speed movement well.
+
+Need more accurate focal length + depth of field for output. Incorrect values.
 
 ## Changelog
+### Version 3.0
+Successfully outputs objects XYZ coordinate based off the given focal length. 
+
+Fixed bugs related to circular objects getting detected too easily.
+
 ### Version 2.0
 Fixed bugs related to crashing.
 
