@@ -1,4 +1,4 @@
-# Version 3.0
+# Version 4.0
 
 Initial code to set up camera and for basic object detection.
 
@@ -17,7 +17,7 @@ Please add all edits to changelog, I'd like to know which version of code is sta
 This will be assuming pip is installed.
 
 ### Libraries
-Install numpy, opencv-python, tensorflow, and ultralytics.
+Install numpy, opencv-python, tensorflow, pyrealsense2 and ultralytics.
 
 ### Other Files
 You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
@@ -31,13 +31,20 @@ Open IDE of choice and run the python script.
 
 ~~Threshold is too loose on circular objects, will refine further.~~ Tightened threshold on circular objects, mostly fixed. Need to fine tune.
 
-_Not detecting correct camera if multiple plugged in_ Not a bug. May look into updating code and retrieving the correct camera every single time.
+~~_Not detecting correct camera if multiple plugged in_ Not a bug. May look into updating code and retrieving the correct camera every single time.~~ Fixed!
 
 Motion is not perfect. Does not track high speed movement well.
 
-Need more accurate focal length + depth of field for output. Incorrect values.
+~~Need more accurate focal length + depth of field for output. Incorrect values.~~ Fixed!
 
 ## Changelog
+### Version 4.0
+Switched to SDK, fixed sensor issues with XYZ coordinates. Accuracy seems to be extremely high.
+
+Added a record function with a hotkey, will output to directory.
+
+Objects in motion are able to be detected better, but it's still not perfect.
+
 ### Version 3.0
 Successfully outputs objects XYZ coordinate based off the given focal length. 
 
