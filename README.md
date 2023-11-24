@@ -6,6 +6,8 @@ Camera being used is an Intel RealSense Depth Camera D415. Will keep using this 
 
 YOLOv4 and opencv-python will be used as a proof of concept. Might upgrade to YOLOv8 if this won't cut it, we'll see. Less documentation on that but it is more efficient so...
 
+Will compartmentalize into objects later.
+
 ## Naming convention
 When a major function is introduced to the code or massively revamped ie. Thresholding algorithms, Filters, adding new libraries etc. Change the first digit of the version! (1.0 -> 2.0)
 
