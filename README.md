@@ -19,10 +19,10 @@ Please add all edits to changelog, I'd like to know which version of code is sta
 This will be assuming pip is installed.
 
 ### Libraries
-Install numpy, opencv-python, tensorflow, openpyxl, pyrealsense2 and ultralytics.
+Install numpy, opencv-python, ~~tensorflow~~, openpyxl, pyrealsense2 and ultralytics.
 
 ### Other Files
-You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
+~~You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights~~ Deprecated, may come back to it.
 
 Please install this to the directory of the other files!
 
