@@ -1,6 +1,8 @@
-import cv2
+    import cv2
 import numpy as np
 import pyrealsense2 as rs
+import pandas as pd
+from datetime import datetime, timedelta
 
 # Load the pre-trained face detection model
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -20,7 +22,11 @@ out = None  # VideoWriter object
 
 recording = False  # Flag to track whether recording is active
 
-# ...
+# Create an empty list to store data
+xyz_data = []
+
+# Timestamp for the last recorded frame
+last_record_time = datetime.now()
 
 while True:
     try:
@@ -78,12 +84,24 @@ while True:
                         depth_value = depth_frame.get_distance(center_x, center_y)
 
                         # Map pixel coordinates to real-world coordinates
-                        color_point = rs.rs2_deproject_pixel_to_point(
-                            color_intrinsics, [center_x, center_y], depth_value)
                         depth_point = rs.rs2_deproject_pixel_to_point(
                             depth_intrinsics, [center_x, center_y], depth_value)
 
                         x_coord, y_coord, z_coord = depth_point
+
+                        # Record XYZ coordinates only when recording is active
+                        if recording:
+                            # Append the coordinates to the list
+                            current_time = datetime.now()
+                            xyz_data.append({
+                                'Timestamp': current_time,
+                                'X_coord': x_coord,
+                                'Y_coord': y_coord,
+                                'Z_coord': z_coord
+                            })
+
+                            # Update the last recorded time
+                            last_record_time = current_time
 
                         # Display coordinates on separate lines
                         cv2.putText(frame, f"Depth X: {x_coord:.3f} meters",
@@ -107,6 +125,12 @@ while True:
             if recording:
                 out.release()  # Stop recording
                 recording = False
+
+                # Convert the list to a DataFrame
+                xyz_df = pd.DataFrame(xyz_data)
+
+                # Save the DataFrame to an Excel file when recording is stopped
+                xyz_df.to_excel('xyz_coordinates.xlsx', index=False)
             else:
                 out = cv2.VideoWriter(
                     'output.avi', fourcc, 60.0, (848, 480))  # Start recording with default RealSense resolution and framerate
