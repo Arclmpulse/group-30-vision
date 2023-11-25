@@ -1,4 +1,4 @@
-# Version 4.0
+# Version 4.1
 
 Initial code to set up camera and for basic object detection.
 
@@ -35,11 +35,20 @@ Open IDE of choice and run the python script.
 
 ~~_Not detecting correct camera if multiple plugged in_ Not a bug. May look into updating code and retrieving the correct camera every single time.~~ Fixed!
 
-Motion is not perfect. Does not track high speed movement well.
+_Motion is not perfect. Does not track high speed movement well._ It's better, not perfect.
 
 ~~Need more accurate focal length + depth of field for output. Incorrect values.~~ Fixed!
 
+Sometimes, the camera feed won't exit properly. Not sure why
+
 ## Changelog
+### Version 4.1
+Changed resolution, loosened the thresholding for detecting round objects. Will play around with it later to fix it once it's mounted.
+
+Added some little changes to fix motion. Will need to fix better later once I understand the particle filter.
+
+Some other bugs came up, will fix later. Need to compartmentalize too.
+
 ### Version 4.0
 Switched to SDK, fixed sensor issues with XYZ coordinates. Accuracy seems to be extremely high.
 
