@@ -1,4 +1,4 @@
-# Version 4.1
+# Version 4.2
 
 Initial code to set up camera and for basic object detection.
 
@@ -19,7 +19,7 @@ Please add all edits to changelog, I'd like to know which version of code is sta
 This will be assuming pip is installed.
 
 ### Libraries
-Install numpy, opencv-python, tensorflow, pyrealsense2 and ultralytics.
+Install numpy, opencv-python, tensorflow, openpyxl, pyrealsense2 and ultralytics.
 
 ### Other Files
 You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights
@@ -42,6 +42,9 @@ _Motion is not perfect. Does not track high speed movement well._ It's better, n
 Sometimes, the camera feed won't exit properly. Not sure why
 
 ## Changelog
+### Version 4.2
+Added a spreadsheet function to the record function for debugging.
+
 ### Version 4.1
 Changed resolution, loosened the thresholding for detecting round objects. Will play around with it later to fix it once it's mounted.
 
