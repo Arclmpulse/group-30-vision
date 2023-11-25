@@ -4,9 +4,9 @@ Initial code to set up camera and for basic object detection.
 
 Camera being used is an Intel RealSense Depth Camera D415. Will keep using this unless it becomes infeasible.
 
-YOLOv4 and opencv-python will be used as a proof of concept. Might upgrade to YOLOv8 if this won't cut it, we'll see. Less documentation on that but it is more efficient so...
+RealSense and opencv-python will be used as a proof of concept. Might use YOLOV8 if this won't cut it and if there's time to switch to DeepLearning, we'll see. Less documentation on that but it is more efficient.
 
-Will compartmentalize into objects later.
+Will compartmentalize and clean up later.
 
 ## Naming convention
 When a major function is introduced to the code or massively revamped ie. Thresholding algorithms, Filters, adding new libraries etc. Change the first digit of the version! (1.0 -> 2.0)
@@ -46,14 +46,14 @@ Sometimes, the camera feed won't exit properly. Not sure why
 Added a spreadsheet function to the record function for debugging.
 
 ### Version 4.1
-Changed resolution, loosened the thresholding for detecting round objects. Will play around with it later to fix it once it's mounted.
+Changed resolution, loosened the thresholding for detecting round objects. Will play around with it later to fix it once it's mounted, though it seems to work very well for a tennis ball.
 
-Added some little changes to fix motion. Will need to fix better later once I understand the particle filter.
+Added some little changes to fix motion, can detect rolling objects at a slow speed reasonably well. Will need to fix better later once I understand the particle filter, might ask Kevin to just implement his.
 
 Some other bugs came up, will fix later. Need to compartmentalize too.
 
 ### Version 4.0
-Switched to SDK, fixed sensor issues with XYZ coordinates. Accuracy seems to be extremely high.
+Switched to Intel's SDK, fixed sensor issues with XYZ coordinates. Accuracy seems to be extremely high.
 
 Added a record function with a hotkey, will output to directory.
 
