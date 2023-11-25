@@ -8,8 +8,8 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 # Initialize the RealSense pipeline
 pipeline = rs.pipeline()
 config = rs.config()
-config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 848, 480, rs.format.bgr8, 60)
+config.enable_stream(rs.stream.depth, 848, 480, rs.format.z16, 90)
 
 # Start the RealSense pipeline
 pipeline.start(config)
@@ -19,6 +19,8 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec
 out = None  # VideoWriter object
 
 recording = False  # Flag to track whether recording is active
+
+# ...
 
 while True:
     try:
@@ -36,19 +38,25 @@ while True:
         # Convert the frame to grayscale for face detection
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Detect faces in the frame
-        faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
-
-        for (x, y, w, h) in faces:
-            # Filter out detected faces by drawing rectangles (you can also choose to skip the frame)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-
-        # Apply Gaussian blur to reduce noise and improve edge detection
-        blurred_frame = cv2.GaussianBlur(gray_frame, (5, 5), 0)
+        # Update intrinsics for the new resolution
+        color_intrinsics = color_frame.profile.as_video_stream_profile().intrinsics
+        depth_intrinsics = depth_frame.profile.as_video_stream_profile().intrinsics
 
         try:
+            # Detect faces in the frame
+            faces = face_cascade.detectMultiScale(
+                gray_frame, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
+
+            for (x, y, w, h) in faces:
+                # Filter out detected faces by drawing rectangles (you can also choose to skip the frame)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+            # Apply Gaussian blur to reduce noise and improve edge detection
+            blurred_frame = cv2.GaussianBlur(gray_frame, (5, 5), 0)
+
             # Use Hough Circle Transform for circle detection
-            circles = cv2.HoughCircles(blurred_frame, cv2.HOUGH_GRADIENT, dp=1, minDist=20, param1=100, param2=50, minRadius=25, maxRadius=75)
+            circles = cv2.HoughCircles(blurred_frame, cv2.HOUGH_GRADIENT,
+                                       dp=1, minDist=50, param1=100, param2=30, minRadius=30, maxRadius=50)
 
             if circles is not None:
                 circles = np.uint16(np.around(circles))
@@ -62,23 +70,28 @@ while True:
                     circularity = 4 * np.pi * area / (perimeter ** 2)
 
                     # Filter by circularity and size
-                    if 0.99 < circularity < 1.01 and radius > 25:
-                        cv2.circle(frame, (center_x, center_y), radius, (0, 255, 0), 2)
+                    if 0.99 < circularity < 1.01 and radius > 10:
+                        cv2.circle(frame, (center_x, center_y),
+                                   radius, (0, 255, 0), 2)
 
                         # Measure the distance to the circle in meters
                         depth_value = depth_frame.get_distance(center_x, center_y)
 
                         # Map pixel coordinates to real-world coordinates
-                        depth_scale = pipeline.get_active_profile().get_device().first_depth_sensor().get_depth_scale()
-                        intrinsics = depth_frame.profile.as_video_stream_profile().intrinsics
-                        depth_point = rs.rs2_deproject_pixel_to_point(intrinsics, [center_x, center_y], depth_value)
+                        color_point = rs.rs2_deproject_pixel_to_point(
+                            color_intrinsics, [center_x, center_y], depth_value)
+                        depth_point = rs.rs2_deproject_pixel_to_point(
+                            depth_intrinsics, [center_x, center_y], depth_value)
 
                         x_coord, y_coord, z_coord = depth_point
 
                         # Display coordinates on separate lines
-                        cv2.putText(frame, f"X: {x_coord:.3f} meters", (center_x - radius, center_y + radius + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                        cv2.putText(frame, f"Y: {y_coord:.3f} meters", (center_x - radius, center_y + radius + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                        cv2.putText(frame, f"Z: {z_coord:.3f} meters", (center_x - radius, center_y + radius + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.putText(frame, f"Depth X: {x_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.putText(frame, f"Depth Y: {y_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.putText(frame, f"Depth Z: {z_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         except Exception as e:
             # Print the error message to the console
@@ -95,7 +108,8 @@ while True:
                 out.release()  # Stop recording
                 recording = False
             else:
-                out = cv2.VideoWriter('output.avi', fourcc, 30.0, (640, 480))  # Start recording with default RealSense resolution and framerate
+                out = cv2.VideoWriter(
+                    'output.avi', fourcc, 60.0, (848, 480))  # Start recording with default RealSense resolution and framerate
                 recording = True
 
         # Write the frame to the output video file if recording
