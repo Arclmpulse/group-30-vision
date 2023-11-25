@@ -24,7 +24,7 @@ Install numpy, opencv-python, ~~tensorflow~~, openpyxl, pyrealsense2 and ultraly
 ### Other Files
 ~~You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights~~ Deprecated, may come back to it.
 
-Please install this to the directory of the other files!
+Please install [Realsense Viewer](https://github.com/IntelRealSense/librealsense/releases/tag/v2.54.2). If you need to adjust resolutions and framerate, as well as calibrate the camera, you can use this software to do so safely. It also provides a 3D viewer with the depth sensor - can use this to cross reference and debug incorrect values.
 
 Open IDE of choice and run the python script.
 
