@@ -6,7 +6,7 @@ Camera being used is an Intel RealSense Depth Camera D415. Will keep using this 
 
 RealSense and opencv-python will be used as a proof of concept. Might use YOLOV8 if this won't cut it and if there's time to switch to DeepLearning, we'll see. Less documentation on that but it is more efficient.
 
-Will compartmentalize and clean up later.
+Will clean up some sections later.
 
 ## Naming convention
 When a major function is introduced to the code or massively revamped ie. Thresholding algorithms, Filters, adding new libraries etc. Change the first digit of the version! (1.0 -> 2.0)
