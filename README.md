@@ -1,4 +1,4 @@
-# Version 4.2
+# Version 4.3
 
 Initial code to set up camera and for basic object detection.
 
@@ -42,6 +42,9 @@ _Motion is not perfect. Does not track high speed movement well._ It's better, n
 Sometimes, the camera feed won't exit properly. Not sure why
 
 ## Changelog
+### Version 4.3
+Compartmentalized the code a bit more.
+
 ### Version 4.2
 Added a spreadsheet function to the record function for debugging.
 
