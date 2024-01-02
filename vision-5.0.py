@@ -3,6 +3,14 @@ import numpy as np
 import pyrealsense2 as rs
 import pandas as pd
 from datetime import datetime, timedelta
+import serial
+
+# Initialize the serial connection
+ser = serial.Serial('COM5', 9600)  # Replace 'COMx' with the actual port of your Arduino
+
+def move_servo(angle):
+    # Send the angle to the Arduino over the serial connection
+    ser.write(f"{angle}\n".encode())
 
 def initialize_pipeline():
     # Initialize the RealSense pipeline
@@ -75,6 +83,11 @@ def process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, las
 
                     x_coord, y_coord, z_coord = depth_point
 
+                    # Check if the ball is detected between 0.5 and 0.51 meters
+                    if 0.5 < z_coord < 0.51:
+                        # Move the servo to 90 degrees
+                        move_servo(90)
+
                     # Record XYZ coordinates only when recording is active
                     if recording:
                         # Append the coordinates to the list
@@ -129,7 +142,7 @@ def main():
             frame = np.asanyarray(color_frame.get_data())
 
             # Process the frame
-            process_frame(frame, recording, out, xyz_data, last_record_time)
+            process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, last_record_time)
 
             # Check for key press
             key = cv2.waitKey(1) & 0xFF
