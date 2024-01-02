@@ -1,4 +1,4 @@
-# Version 4.3
+# Version 5.0
 
 Initial code to set up camera and for basic object detection.
 
@@ -19,14 +19,14 @@ Please add all edits to changelog, I'd like to know which version of code is sta
 This will be assuming pip is installed.
 
 ### Libraries
-Install numpy, opencv-python, ~~tensorflow~~, openpyxl, pyrealsense2 and ultralytics.
+Install numpy, opencv-python, ~~tensorflow~~, openpyxl, pyrealsense2, pyserial and ultralytics.
 
 ### Other Files
 ~~You will also need to download a file from the following link: https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights~~ Deprecated, may come back to it.
 
 Please install [Realsense Viewer](https://github.com/IntelRealSense/librealsense/releases/tag/v2.54.2). If you need to adjust resolutions and framerate, as well as calibrate the camera, you can use this software to do so safely. It also provides a 3D viewer with the depth sensor - can use this to cross reference and debug incorrect values.
 
-Open IDE of choice and run the python script.
+Open IDE of choice and run the python script. Will need the Arduino IDE and a board to upload the code onto as well.
 
 ## Known Bugs
 ~~CPU/Memory allocation is a little uncontrolled, may crash other programs. Will look into this.~~ Fixed!
@@ -41,7 +41,12 @@ _Motion is not perfect. Does not track high speed movement well._ It's better, n
 
 Sometimes, the camera feed won't exit properly. Not sure why
 
+Servo actuation is a bit janky. Will need to improve.
+
 ## Changelog
+### Version 5.0
+Added trigger for servo actuation. Will require the use of serial and an Arduino.
+
 ### Version 4.3
 Compartmentalized the code a bit more.
 
