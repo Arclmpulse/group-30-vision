@@ -1,4 +1,4 @@
-# Version 5.0
+# Version FINAL
 
 Initial code to set up camera and for basic object detection.
 
@@ -35,15 +35,18 @@ Open IDE of choice and run the python script. Will need the Arduino IDE and a bo
 
 ~~_Not detecting correct camera if multiple plugged in_ Not a bug. May look into updating code and retrieving the correct camera every single time.~~ Fixed!
 
-_Motion is not perfect. Does not track high speed movement well._ It's better, not perfect.
+~~Motion is not perfect. Does not track high speed movement well.~~ As good as it'll get.
 
 ~~Need more accurate focal length + depth of field for output. Incorrect values.~~ Fixed!
 
-Sometimes, the camera feed won't exit properly. Not sure why
+~~Sometimes, the camera feed won't exit properly. Not sure why~~ Fixed!
 
-Servo actuation is a bit janky. Will need to improve.
+~~Servo actuation is a bit janky. Will need to improve.~~ Deprecated
 
 ## Changelog
+### Version Final
+Removed servo actuation trigger, tightened thresholds, and created a write to buffer file functionality for Unity C# to read.
+
 ### Version 5.0
 Added trigger for servo actuation. Will require the use of serial and an Arduino.
 
