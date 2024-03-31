@@ -3,14 +3,7 @@ import numpy as np
 import pyrealsense2 as rs
 import pandas as pd
 from datetime import datetime, timedelta
-import serial
-
-# Initialize the serial connection
-ser = serial.Serial('COM5', 9600)  # Replace 'COMx' with the actual port of your Arduino
-
-def move_servo(angle):
-    # Send the angle to the Arduino over the serial connection
-    ser.write(f"{angle}\n".encode())
+import os
 
 def initialize_pipeline():
     # Initialize the RealSense pipeline
@@ -24,7 +17,12 @@ def initialize_pipeline():
 def initialize_video_writer():
     # Define the codec and create a VideoWriter object with higher framerate and resolution
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec
-    return cv2.VideoWriter('output.avi', fourcc, 60.0, (848, 480))
+    return cv2.VideoWriter('output.avi', fourcc, 24.0, (848, 480))
+
+def delete_coordinates_file():
+    # Delete the coordinates file if it exists
+    if os.path.exists('coordinates.txt'):
+        os.remove('coordinates.txt')
 
 def detect_faces(frame):
     # Load the pre-trained face detection model
@@ -39,7 +37,7 @@ def detect_faces(frame):
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-def process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, last_record_time):
+def process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, last_record_time, output_file):
     try:
         # Convert the frame to grayscale for additional processing
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -56,7 +54,7 @@ def process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, las
 
         # Use Hough Circle Transform for circle detection
         circles = cv2.HoughCircles(blurred_frame, cv2.HOUGH_GRADIENT,
-                                   dp=1, minDist=50, param1=100, param2=30, minRadius=30, maxRadius=50)
+                                   dp=1, minDist=10, param1=100, param2=20, minRadius=0, maxRadius=20)
 
         if circles is not None:
             circles = np.uint16(np.around(circles))
@@ -70,54 +68,63 @@ def process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, las
                 circularity = 4 * np.pi * area / (perimeter ** 2)
 
                 # Filter by circularity and size
-                if 0.99 < circularity < 1.01 and radius > 10:
+                if 0.95 < circularity < 1.05 and radius > 0:
                     cv2.circle(frame, (center_x, center_y),
                                radius, (0, 255, 0), 2)
+                    
 
                     # Measure the distance to the circle in meters
                     depth_value = depth_frame.get_distance(center_x, center_y)
 
-                    # Map pixel coordinates to real-world coordinates
-                    depth_point = rs.rs2_deproject_pixel_to_point(
-                        depth_intrinsics, [center_x, center_y], depth_value)
+                    if depth_value > 0.0001:
 
-                    x_coord, y_coord, z_coord = depth_point
+                        # Map pixel coordinates to real-world coordinates
+                        depth_point = rs.rs2_deproject_pixel_to_point(
+                            depth_intrinsics, [center_x, center_y], depth_value)
 
-                    # Check if the ball is detected between 0.5 and 0.51 meters
-                    if 0.5 < z_coord < 0.51:
-                        # Move the servo to 90 degrees
-                        move_servo(90)
+                        x_coord, y_coord, z_coord = depth_point
 
-                    # Record XYZ coordinates only when recording is active
-                    if recording:
-                        # Append the coordinates to the list
-                        current_time = datetime.now()
-                        xyz_data.append({
-                            'Timestamp': current_time,
-                            'X_coord': x_coord,
-                            'Y_coord': y_coord,
-                            'Z_coord': z_coord
-                        })
+                        # Record XYZ coordinates only when recording is active
+                        if recording:
+                            # Append the coordinates to the list
+                            current_time = datetime.now()
+                            xyz_data.append({
+                                'Timestamp': current_time,
+                                'X_coord': x_coord,
+                                'Y_coord': y_coord,
+                                'Z_coord': z_coord
+                            })
 
-                        # Update the last recorded time
-                        last_record_time = current_time
+                            # Update the last recorded time
+                            last_record_time = current_time
 
-                    # Display coordinates on separate lines
-                    cv2.putText(frame, f"Depth X: {x_coord:.3f} meters",
-                                (center_x - radius, center_y + radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    cv2.putText(frame, f"Depth Y: {y_coord:.3f} meters",
-                                (center_x - radius, center_y + radius + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    cv2.putText(frame, f"Depth Z: {z_coord:.3f} meters",
-                                (center_x - radius, center_y + radius + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        # Append the coordinates to the file
+                        if output_file:
+                            with open(output_file, 'a') as f:  # Open in append mode ('a')
+                                f.write(f"{x_coord},{y_coord}\n")  # Write coordinates
+
+                        # Display coordinates on separate lines
+                        cv2.putText(frame, f"Depth X: {x_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.putText(frame, f"Depth Y: {y_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                        cv2.putText(frame, f"Depth Z: {z_coord:.3f} meters",
+                                    (center_x - radius, center_y + radius + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     except Exception as e:
         # Print the error message to the console
         print(f"Error in frame processing: {e}")
 
+
 def main():
+    # Delete the coordinates file if it exists
+    delete_coordinates_file()
+
     # Initialize RealSense pipeline and video writer
     pipeline = initialize_pipeline()
     out = initialize_video_writer()
+    # Output file for exporting coordinates
+    output_file = 'coordinates.txt'
 
     # Flag to track whether recording is active
     recording = False
@@ -142,7 +149,7 @@ def main():
             frame = np.asanyarray(color_frame.get_data())
 
             # Process the frame
-            process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, last_record_time)
+            process_frame(frame, color_frame, depth_frame, recording, out, xyz_data, last_record_time, output_file)
 
             # Check for key press
             key = cv2.waitKey(1) & 0xFF
